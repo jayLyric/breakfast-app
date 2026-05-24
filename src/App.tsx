@@ -67,8 +67,10 @@ const getDateKey = () => {
   ].join('-');
 };
 
-const getStorageKey = () => `breakfast-${getDateKey()}`;
-const getResetKey = () => `breakfast-reset-${getDateKey()}`;
+const APP_VERSION = 'v2';
+
+const getStorageKey = () => `breakfast-${getDateKey()}-${APP_VERSION}`;
+const getResetKey = () => `breakfast-reset-${getDateKey()}-${APP_VERSION}`;
 
 const safeParse = <T,>(value: string, fallback: T): T => {
   try {
