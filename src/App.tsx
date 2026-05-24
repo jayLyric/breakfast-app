@@ -7,36 +7,21 @@ import React, {
 import * as XLSX from 'xlsx';
 
 const DEFAULT_USERS = [
-  '张三',
-  '李四',
-  '王五',
-  '赵六',
-  '孙七',
-  '周八',
-  '吴九',
-  '郑十',
-  '王强',
-  '李明',
-  '刘洋',
-  '陈伟',
-  '杨帆',
-  '黄涛',
-  '赵鹏',
-  '胡斌',
-  '谢凯',
-  '何俊',
-  '高飞',
-  '林宇',
-  '郭磊',
-  '罗成',
-  '马超',
-  '许峰',
-  '梁杰',
-  '宋涛',
-  '彭浩',
-  '唐龙',
-  '韩松',
-  '邓辉',
+  '杨志军',
+  '尹涛',
+  '罗杰耀',
+  '刘章凯',
+  '郭永',
+  '邓永明',
+  '李建力',
+  '拉平',
+  '加布',
+  '李保',
+  '康晓波',
+  '赵宏飞',
+  '孙师傅',
+  '普次师傅',
+  '杨师傅',
 ].map((name, index) => ({
   id: index + 1,
   name,
@@ -53,10 +38,10 @@ interface Row {
 }
 
 const BREAKFAST_FIELDS = [
-  { key: 'baozi', label: '包子（个）' },
-  { key: 'mantou', label: '馒头（个）' },
-  { key: 'porridge', label: '稀饭（碗）' },
-  { key: 'egg', label: '鸡蛋（个）' },
+  { key: 'baozi', label: '包子', unit: '个' },
+  { key: 'mantou', label: '馒头', unit: '个' },
+  { key: 'porridge', label: '稀饭', unit: '碗' },
+  { key: 'egg', label: '鸡蛋', unit: '个' },
 ] as const;
 
 type FieldKey = (typeof BREAKFAST_FIELDS)[number]['key'];
@@ -114,7 +99,6 @@ export default function App() {
   const [history, setHistory] = useState<{ id: number; date: string; rows: Row[]; totals: Record<FieldKey, number> }[]>(loadHistory);
   const [search, setSearch] = useState('');
   const [lastArchive, setLastArchive] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const rowsRef = useRef(rows);
   const historyRef = useRef(history);
@@ -227,7 +211,10 @@ export default function App() {
   };
 
   const copyWechatText = async () => {
-    const content = rows
+    const filled = rows.filter((row: Row) =>
+      BREAKFAST_FIELDS.some((field) => row[field.key] !== ''),
+    );
+    const content = filled
       .map(
         (row: Row) =>
           `${row.name}｜包子:${row.baozi || 0} 馒头:${row.mantou || 0} 稀饭:${row.porridge || 0} 鸡蛋:${row.egg || 0}`,
@@ -241,144 +228,143 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 p-4 md:p-8">
-      <div className="mx-auto max-w-7xl rounded-[32px] bg-white shadow-2xl overflow-hidden border border-slate-200">
-        <div className="bg-slate-900 text-white p-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight">
-                早餐统计生产版系统
-              </h1>
-              <p className="text-slate-300 mt-3 text-lg">
-                微信群直接打开 · 自动归档 · Excel导出
-              </p>
-            </div>
+    <div className="min-h-screen bg-slate-100 p-3 md:p-6">
+      <div className="mx-auto max-w-3xl rounded-2xl md:rounded-[32px] bg-white shadow-2xl overflow-hidden border border-slate-200">
+        {/* Header */}
+        <div className="bg-slate-900 text-white p-5 md:p-8">
+          <h1 className="text-2xl md:text-4xl font-bold tracking-tight">
+            早餐统计
+          </h1>
+          <p className="text-slate-300 mt-2 text-sm md:text-lg">
+            微信群直接打开 · 自动归档 · Excel导出
+          </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {BREAKFAST_FIELDS.map((field) => (
-                <div
-                  key={field.key}
-                  className="bg-white/10 rounded-2xl px-5 py-4 backdrop-blur"
-                >
-                  <div className="text-sm text-slate-300">{field.label}</div>
-                  <div className="text-3xl font-bold mt-2">
-                    {totals[field.key]}
-                  </div>
+          <div className="grid grid-cols-4 gap-2 md:gap-4 mt-5">
+            {BREAKFAST_FIELDS.map((field) => (
+              <div
+                key={field.key}
+                className="bg-white/10 rounded-xl md:rounded-2xl px-3 py-3 md:px-5 md:py-4 text-center"
+              >
+                <div className="text-xs md:text-sm text-slate-300">
+                  {field.label}
                 </div>
-              ))}
-            </div>
+                <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">
+                  {totals[field.key]}
+                </div>
+                <div className="text-[10px] md:text-xs text-slate-400">
+                  {field.unit}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="p-6 border-b border-slate-100 bg-slate-50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-          <div className="flex flex-wrap gap-3">
+        {/* Toolbar */}
+        <div className="p-3 md:p-6 border-b border-slate-100 bg-slate-50 space-y-3">
+          <div className="flex flex-wrap gap-2 md:gap-3">
             <button
               onClick={copyWechatText}
-              className="rounded-2xl bg-slate-900 text-white px-6 py-3 font-medium hover:scale-[1.02] transition-all"
+              className="rounded-xl md:rounded-2xl bg-slate-900 text-white px-4 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-medium active:scale-95 transition-all"
             >
               复制微信群统计
             </button>
             <button
               onClick={exportExcel}
-              className="rounded-2xl bg-emerald-600 text-white px-6 py-3 font-medium hover:scale-[1.02] transition-all"
+              className="rounded-xl md:rounded-2xl bg-emerald-600 text-white px-4 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-medium active:scale-95 transition-all"
             >
               导出 Excel
             </button>
             <button
               onClick={clearToday}
-              className="rounded-2xl bg-white border border-slate-200 px-6 py-3 font-medium hover:bg-slate-100 transition-all"
+              className="rounded-xl md:rounded-2xl bg-white border border-slate-200 px-4 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-medium active:scale-95 transition-all"
             >
               手动清空
             </button>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 md:items-center">
+          <div className="flex gap-3 items-center">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="搜索姓名..."
-              className="rounded-2xl border border-slate-200 px-5 py-3 outline-none focus:ring-2 focus:ring-slate-400 bg-white"
+              className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white"
             />
-            <div className="text-sm text-slate-500">
-              已填写：
-              <span className="font-bold text-slate-800">
-                {filledCount}/{rows.length}
-              </span>
+            <div className="text-sm text-slate-500 whitespace-nowrap">
+              已填 <span className="font-bold text-slate-800">{filledCount}</span>/{rows.length}
             </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1100px]">
-            <thead>
-              <tr className="bg-slate-100 border-b border-slate-200">
-                <th className="text-left p-5 font-semibold">姓名</th>
-                {BREAKFAST_FIELDS.map((field) => (
-                  <th key={field.key} className="text-left p-5 font-semibold">
-                    {field.label}
-                  </th>
-                ))}
-                <th className="text-left p-5 font-semibold">更新时间</th>
-                <th className="text-left p-5 font-semibold">状态</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row) => {
-                const isFilled = BREAKFAST_FIELDS.some(
-                  (field) => row[field.key as FieldKey] !== '',
-                );
-                return (
-                  <tr
-                    key={row.id}
-                    className="border-b border-slate-100 hover:bg-slate-50 transition-all"
-                  >
-                    <td className="p-5 font-medium text-slate-700">
+        {/* Card list */}
+        <div className="p-3 md:p-6 space-y-2 md:space-y-3 max-h-[60vh] overflow-y-auto">
+          {filteredRows.map((row) => {
+            const isFilled = BREAKFAST_FIELDS.some(
+              (field) => row[field.key as FieldKey] !== '',
+            );
+            return (
+              <div
+                key={row.id}
+                className={`rounded-xl md:rounded-2xl border p-3 md:p-4 transition-all ${
+                  isFilled
+                    ? 'border-emerald-200 bg-emerald-50/50'
+                    : 'border-slate-200 bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-800 text-sm md:text-base">
                       {row.name}
-                    </td>
-                    {BREAKFAST_FIELDS.map((field) => (
-                      <td key={field.key} className="p-5">
-                        <input
-                          type="number"
-                          min="0"
-                          value={row[field.key as FieldKey]}
-                          onChange={(e) =>
-                            updateField(row.id, field.key, e.target.value)
-                          }
-                          placeholder="0"
-                          className="w-24 rounded-xl border border-slate-200 px-3 py-3 outline-none focus:ring-2 focus:ring-slate-400"
-                        />
-                      </td>
-                    ))}
-                    <td className="p-5 text-sm text-slate-500">
-                      {row.updatedAt || '-'}
-                    </td>
-                    <td className="p-5">
-                      {isFilled ? (
-                        <span className="rounded-full bg-emerald-100 text-emerald-700 px-4 py-1 text-sm font-medium">
-                          已填写
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-slate-100 text-slate-500 px-4 py-1 text-sm font-medium">
-                          未填写
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    </span>
+                    {isFilled ? (
+                      <span className="text-[10px] md:text-xs rounded-full bg-emerald-500 text-white px-2 py-0.5 font-medium">
+                        已填
+                      </span>
+                    ) : (
+                      <span className="text-[10px] md:text-xs rounded-full bg-slate-300 text-slate-600 px-2 py-0.5 font-medium">
+                        未填
+                      </span>
+                    )}
+                  </div>
+                  {row.updatedAt && (
+                    <span className="text-[10px] md:text-xs text-slate-400">
+                      {row.updatedAt}
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 md:gap-3">
+                  {BREAKFAST_FIELDS.map((field) => (
+                    <div key={field.key} className="flex flex-col items-center">
+                      <label className="text-[10px] md:text-xs text-slate-400 mb-1 text-center">
+                        {field.label}
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        inputMode="numeric"
+                        value={row[field.key as FieldKey]}
+                        onChange={(e) =>
+                          updateField(row.id, field.key, e.target.value)
+                        }
+                        placeholder="0"
+                        className="w-full text-center rounded-lg md:rounded-xl border border-slate-200 px-1 py-2 md:px-3 md:py-2.5 text-sm md:text-base outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
+                      />
+                      <span className="text-[10px] md:text-xs text-slate-300 mt-0.5">
+                        {field.unit}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="border-t border-slate-100 p-6 bg-slate-50 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="text-sm text-slate-500 leading-7">
-            <div>自动归档时间：第二天中午12:00</div>
-            <div>历史归档数量：{history.length}</div>
-            <div>最近归档：{lastArchive || '暂无归档'}</div>
-          </div>
-          <div className="text-right text-sm text-slate-500">
-            <div>适配手机 / 平板 / 微信内浏览器</div>
-            <div>支持100+人同时使用</div>
+        {/* Footer */}
+        <div className="border-t border-slate-100 p-4 md:p-6 bg-slate-50">
+          <div className="text-xs md:text-sm text-slate-400 text-center space-y-1">
+            <div>每天中午12:00自动归档 · 历史归档 {history.length} 条</div>
+            <div className="md:hidden">下拉刷新或重新打开链接即可更新</div>
           </div>
         </div>
       </div>
