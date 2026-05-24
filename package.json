@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vitejs/plugin-legacy": "^6.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "terser": "^5.48.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
