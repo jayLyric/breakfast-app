@@ -273,12 +273,6 @@ export default function App() {
             >
               导出 Excel
             </button>
-            <button
-              onClick={clearToday}
-              className="rounded-xl md:rounded-2xl bg-white border border-slate-200 px-4 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-medium active:scale-95 transition-all"
-            >
-              手动清空
-            </button>
           </div>
 
           <div className="flex gap-3 items-center">
