@@ -22,6 +22,7 @@ const DEFAULT_USERS = [
   '孙师傅',
   '普次师傅',
   '杨师傅',
+  '曲杰师傅',
 ].map((name, index) => ({
   id: index + 1,
   name,
@@ -67,7 +68,7 @@ const getDateKey = () => {
   ].join('-');
 };
 
-const APP_VERSION = 'v2';
+const APP_VERSION = 'v3';
 
 const getStorageKey = () => `breakfast-${getDateKey()}-${APP_VERSION}`;
 const getResetKey = () => `breakfast-reset-${getDateKey()}-${APP_VERSION}`;
