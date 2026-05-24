@@ -228,16 +228,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 p-3 md:p-6">
+    <div className="min-h-screen bg-stone-50 p-3 md:p-6">
       <div className="mx-auto max-w-3xl rounded-2xl md:rounded-[32px] bg-white shadow-2xl overflow-hidden border border-slate-200">
         {/* Header */}
         <div className="bg-slate-900 text-white p-5 md:p-8">
           <h1 className="text-2xl md:text-4xl font-bold tracking-tight">
             早餐统计
           </h1>
-          <p className="text-slate-300 mt-2 text-sm md:text-lg">
-            微信群直接打开 · 自动归档 · Excel导出
-          </p>
 
           <div className="grid grid-cols-4 gap-2 md:gap-4 mt-5">
             {BREAKFAST_FIELDS.map((field) => (
